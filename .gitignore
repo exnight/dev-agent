@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Credentials and local environment files
+auth.json
+.env
+.env.*
+!.env.example
+
+# Pi sessions and machine-specific data
+sessions/
+.local/
+
+# Logs
+*.log
+
+# Operating system files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDE and editor files
+.vscode/
+.idea/
