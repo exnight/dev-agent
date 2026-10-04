@@ -8,7 +8,8 @@
     "pi": {
         "skills": [
             "./skills",
-            "./vendor/garden-skills/skills/web-design-engineer"
+            "./vendor/garden-skills/skills/web-design-engineer",
+            "./vendor/impeccable/.pi/skills/impeccable"
         ],
         "prompts": [
             "./prompts"
