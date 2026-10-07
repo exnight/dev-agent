@@ -1,0 +1,16 @@
+{
+    "name": "Dev Agent",
+    "image": "dev-agent-dev:node26",
+    "remoteUser": "devops",
+    "init": true,
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+    "workspaceFolder": "/workspace",
+    "containerEnv": {
+        "GIT_SSH_COMMAND": "ssh"
+    },
+    "mounts": [
+        "source=${localWorkspaceFolder},target=/opt/dev-agent,type=bind,readonly",
+        "source=dev-agent-home,target=/home/devops/.pi/agent,type=volume",
+        "source=dev-agent-dev-agent-sessions,target=/home/devops/.pi/sessions,type=volume"
+    ]
+}

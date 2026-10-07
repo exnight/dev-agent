@@ -2,6 +2,14 @@
     "name": "dev-agent",
     "version": "0.1.0",
     "private": true,
+    "type": "module",
+    "scripts": {
+        "test": "node --test \"tests/**/*.test.ts\"",
+        "typecheck": "tsc -p tsconfig.json"
+    },
+    "engines": {
+        "node": ">=22.19.0"
+    },
     "keywords": [
         "pi-package"
     ],
@@ -17,5 +25,10 @@
         "extensions": [
             "./extensions"
         ]
+    },
+    "devDependencies": {
+        "@earendil-works/pi-coding-agent": "1.0.4",
+        "@types/node": "^26.6.4",
+        "typescript": "^7.0.2"
     }
 }
