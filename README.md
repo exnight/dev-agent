@@ -30,3 +30,7 @@ Run the following commands in a host terminal, not in the container.
    docker build -f image/Dockerfile --build-arg PI_VERSION="$PI_VERSION" -t dev-agent-dev:node26 .
    ```
 5. Use a code editor and open in the container.
+
+## Extensions
+
+- **`/usage`:** shows recorded session cost by provider/model. See [extensions/usage/README.md](extensions/usage/README.md).
