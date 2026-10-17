@@ -1,7 +1,13 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import type { ExtensionAPI, SessionEntry } from "@earendil-works/pi-coding-agent";
-import usageExtension, { runUsage, type UsageContext } from "../../extensions/usage/index.ts";
+import type {
+  ExtensionAPI,
+  SessionEntry,
+} from "@earendil-works/pi-coding-agent";
+import usageExtension, {
+  runUsage,
+  type UsageContext,
+} from "../../extensions/usage/index.ts";
 import { assistant, usage } from "./fixtures.ts";
 
 type Command = Parameters<ExtensionAPI["registerCommand"]>[1];
@@ -24,12 +30,19 @@ function context(entries: SessionEntry[], hasUI = true) {
   const ctx: UsageContext = {
     hasUI,
     sessionManager: { getEntries: () => entries },
-    ui: { notify: (message, level) => { notifications.push({ message, level }); } },
+    ui: {
+      notify: (message, level) => {
+        notifications.push({ message, level });
+      },
+    },
   };
   return { ctx, notifications };
 }
 
-function notificationAt(notifications: Notification[], index: number): Notification {
+function notificationAt(
+  notifications: Notification[],
+  index: number,
+): Notification {
   const notification = notifications[index];
   assert.ok(notification, `Expected notification ${index}`);
   return notification;
@@ -37,8 +50,12 @@ function notificationAt(notifications: Notification[], index: number): Notificat
 
 test("registers only a command, with details and rates completions", () => {
   const command = register();
-  assert.deepEqual(command.getArgumentCompletions?.("d"), [{ value: "details", label: "details" }]);
-  assert.deepEqual(command.getArgumentCompletions?.("r"), [{ value: "rates", label: "rates" }]);
+  assert.deepEqual(command.getArgumentCompletions?.("d"), [
+    { value: "details", label: "details" },
+  ]);
+  assert.deepEqual(command.getArgumentCompletions?.("r"), [
+    { value: "rates", label: "rates" },
+  ]);
   assert.deepEqual(command.getArgumentCompletions?.(""), [
     { value: "details", label: "details" },
     { value: "rates", label: "rates" },
@@ -55,13 +72,19 @@ test("each argument sends one notification from the raw session entries", () => 
   runUsage(" details ", ctx);
   assert.match(notificationAt(notifications, 1).message, /By source/);
   runUsage(" RATES ", ctx);
-  assert.match(notificationAt(notifications, 2).message, /^Rates \(USD per million tokens/);
+  assert.match(
+    notificationAt(notifications, 2).message,
+    /^Rates \(USD per million tokens/,
+  );
 });
 
 test("unknown arguments warn without reading session history", () => {
   const { ctx, notifications } = context([]);
-  ctx.sessionManager.getEntries = () => { throw new Error("Should not read entries"); };
-  for (const args of ["help", "specs", "--help", "unexpected", "constructor"]) runUsage(args, ctx);
+  ctx.sessionManager.getEntries = () => {
+    throw new Error("Should not read entries");
+  };
+  for (const args of ["help", "specs", "--help", "unexpected", "constructor"])
+    runUsage(args, ctx);
   assert.equal(notifications.length, 5);
   for (const notification of notifications) {
     assert.equal(notification.level, "warning");
@@ -71,13 +94,17 @@ test("unknown arguments warn without reading session history", () => {
 });
 
 test("reports unverified pricing as a warning", () => {
-  const { ctx, notifications } = context([assistant(usage({}, { input: 100 }))]);
+  const { ctx, notifications } = context([
+    assistant(usage({}, { input: 100 })),
+  ]);
   runUsage("", ctx);
   assert.equal(notificationAt(notifications, 0).level, "warning");
 });
 
 test("incomplete component costs warn without relabeling the recorded total", () => {
-  const { ctx, notifications } = context([assistant(usage({ input: 1, output: 2, total: 10 }))]);
+  const { ctx, notifications } = context([
+    assistant(usage({ input: 1, output: 2, total: 10 })),
+  ]);
   runUsage("", ctx);
   const notification = notificationAt(notifications, 0);
   assert.equal(notification.level, "warning");
@@ -93,7 +120,9 @@ test("headless output goes to stderr, never stdout or unavailable UI", (t) => {
     output += chunk.toString();
     return true;
   });
-  t.mock.method(process.stdout, "write", () => { throw new Error("Must preserve protocol stdout"); });
+  t.mock.method(process.stdout, "write", () => {
+    throw new Error("Must preserve protocol stdout");
+  });
   runUsage("", ctx);
   assert.match(output, /Session usage \(estimated USD\)/);
   output = "";

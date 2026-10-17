@@ -1,6 +1,13 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { formatCost, formatRate, formatTokens, mismatchWarning, safeLabel, sortedGroups } from "../../extensions/usage/text.ts";
+import {
+  formatCost,
+  formatRate,
+  formatTokens,
+  mismatchWarning,
+  safeLabel,
+  sortedGroups,
+} from "../../extensions/usage/text.ts";
 import { collectUsage } from "../../extensions/usage/collect.ts";
 import { assistant, usage } from "./fixtures.ts";
 
@@ -50,12 +57,17 @@ test("groups sort by recorded cost, highest first, then by name", () => {
     assistant(usage({ input: 1 }), "test", "a"),
     assistant(usage({ input: 5 }), "test", "c"),
   ]);
-  assert.deepEqual(sortedGroups(modelBreakdowns).map(([name]) => name), ["test/c", "test/a", "test/b"]);
+  assert.deepEqual(
+    sortedGroups(modelBreakdowns).map(([name]) => name),
+    ["test/c", "test/a", "test/b"],
+  );
 });
 
 test("a mismatch warning appears only when a record's components do not reconcile", () => {
-  const clean = collectUsage([assistant(usage({ input: 1 }))]).sessionTotals.diagnostics;
-  const mismatched = collectUsage([assistant(usage({ input: 1, total: 10 }))]).sessionTotals.diagnostics;
+  const clean = collectUsage([assistant(usage({ input: 1 }))]).sessionTotals
+    .diagnostics;
+  const mismatched = collectUsage([assistant(usage({ input: 1, total: 10 }))])
+    .sessionTotals.diagnostics;
   assert.deepEqual(mismatchWarning(clean), []);
   assert.equal(mismatchWarning(mismatched).length, 1);
 });

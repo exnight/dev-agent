@@ -16,7 +16,7 @@ RUN --mount=type=cache,target=/root/.npm,sharing=locked \
         install --with-deps chromium \
     && rm -rf /var/lib/apt/lists/*
 
-# Bump this build argument to refresh apt tools without reinstalling Chromium.
+# Build arg to refresh apt tools
 ARG TOOLS_REFRESH=0
 
 RUN : "${TOOLS_REFRESH}" \
@@ -40,8 +40,7 @@ RUN groupmod --new-name devops node \
 ENV PI_CODING_AGENT_DIR=/home/devops/.pi/agent
 ENV PI_CODING_AGENT_SESSION_DIR=/home/devops/.pi/sessions
 
-# Required build argument, derived from package.json.
-# Declare it after all layers that should survive Pi upgrades.
+# Derived from package.json; after all layers that should survive Pi upgrades
 ARG PI_VERSION
 
 RUN --mount=type=cache,target=/root/.npm,sharing=locked \
