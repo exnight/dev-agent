@@ -4,76 +4,57 @@ A shared, container-based dev setup for my Windows desktop and MacBook, with too
 
 ## Design
 
-I use one container per project, but I don't want to re-login and set up providers per container, especially upon container updates.
+I use one container per project, but I don't want to set up the shared workflow and tooling multiple times.
 
-I adopt a **shared, machine-local mounted volume** for agent states. Stored credentials then can be reused across projects and containers.
-
-I choose [Pi](https://pi.dev) for its simplicity and customization. The [`package.json`](package.json) defines the Pi package resources and the Pi version used by the image.
+Set up the host machine once, then reuse stored credentials and tooling across projects and containers.
 
 ## Get Started
 
 ### 1. Prepare the Host
 
-1. Install and start Docker Desktop.
-2. Install an editor with devcontainer support.
-3. Install Git and `jq`. Use a POSIX shell.
+1. Prepare a Docker-compatible environment for Linux containers.
+  - Windows and MacOS: Docker Desktop is recommended.
+  - Linux: Docker engine with Docker Compose is recommended.
+1. Install Git and `jq`.
+1. Run `git clone --recurse-submodules <repository-url> dev-agent && cd dev-agent`
 
-On Windows, use a WSL terminal. On macOS, use the host terminal. You do not need Node.js on the host.
+Other Docker-compatible environments may work but are not yet tested.
 
-### 2. Get the Repository
+### 2. Build the Image
 
-Replace `<repository-url>` with this repository's URL. Run:
+Build the image with two tags:
 
-```bash
-git clone --recurse-submodules <repository-url> dev-agent
-cd dev-agent
-```
+- **Dev:** Use it to develop this repository.
+- **Shared base:** Use it as the base for other projects.
 
-### 3. Build the Image
+Run from this repository's root in a host terminal: `./image/build.sh`. On Windows, use WSL.
 
-Run these commands from the repository root in the host terminal:
-
-```bash
-PI_VERSION="$(jq -er '.devDependencies["@earendil-works/pi-coding-agent"]' package.json)"
-docker build \
-  -f image/Dockerfile \
-  --build-arg PI_VERSION="$PI_VERSION" \
-  -t dev-agent-dev:node26 \
-  .
-```
-
-Build the image on each machine. The devcontainer configuration does not build it automatically.
-
-### 4. Open the Container
+### 3. Open the Container
 
 Open the repository in your editor. In VS Code, select **Dev Containers: Reopen in Container**.
 
-Install dependencies inside the container:
-
-```bash
-npm ci
-```
-
-Pi is installed in the image. Set up provider authentication before use. Do not commit credentials.
+Install dependencies inside the container: `npm ci`
 
 ## Data Storage
 
-| Container path              | Storage                                                        |
-| --------------------------- | -------------------------------------------------------------- |
-| `/workspace`                | Writable host repository mount.                                |
-| `/opt/dev-agent`            | Read-only mount of the same repository.                        |
-| `/home/devops/.pi/agent`    | Volume `dev-agent-home`: local agent settings and credentials. |
-| `/home/devops/.pi/sessions` | Volume `dev-agent-dev-agent-sessions`: session history.        |
-
-Volumes retain data when you replace a container. They are local to each Docker engine. Containers that share a volume can access its data.
-
-Git does not transfer credentials or sessions. Deleting a volume deletes its data.
-
-The mounts do not register the Pi package or copy `config/settings.json` into Pi's local settings.
+| Container path                   | Storage                                                            |
+| -------------------------------- | ------------------------------------------------------------------ |
+| `/workspace`                     | Writable host repository mount.                                    |
+| `/opt/dev-agent`                 | Read-only mount of the same repository.                            |
+| `/var/lib/dev-agent/pi/agent`    | Volume `dev-agent-pi-agent`: shared Pi settings and credentials.   |
+| `/var/lib/dev-agent/pi/sessions` | Volume `dev-agent-pi-sessions`: this repository's session history. |
 
 ## Pi Theme and Extensions
 
-After the package is loaded in Pi, run `/reload`. In `/settings`, select **Theme**, then `github-dark-default`.
+Register the mounted package in `$PI_CODING_AGENT_DIR/settings.json`:
+
+```json
+"packages": ["/opt/dev-agent"]
+```
+
+Keep other package entries. Use the absolute path: relative paths resolve from the settings directory and can break after migration.
+
+Run `/reload`. In `/settings`, select **Theme**, then `github-dark-default`.
 
 Set the terminal background to `#0d1117` to match the theme. Run `npm ci` to install the local schema for theme validation.
 

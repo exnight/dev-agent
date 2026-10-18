@@ -13,7 +13,7 @@ test("theme schema reference resolves from the installed Pi dependency and valid
   const theme = JSON.parse(readFileSync(themeUrl, "utf8"));
   assert.equal(
     theme.$schema,
-    "../node_modules/@earendil-works/pi-coding-agent/dist/modes/interactive/theme/theme-schema.json",
+    "../node_modules/@earendil-works/pi-coding-agent/schemas/theme.schema.json",
   );
   const schemaUrl = new URL(theme.$schema, themeUrl);
   assert.equal(schemaUrl.protocol, "file:");

@@ -33,12 +33,12 @@ RUN groupmod --new-name devops node \
         --move-home node \
     && mkdir -p \
         /workspace \
-        /home/devops/.pi/agent \
-        /home/devops/.pi/sessions \
-    && chown -R devops:devops /workspace /home/devops/.pi
+        /var/lib/dev-agent/pi/agent \
+        /var/lib/dev-agent/pi/sessions \
+    && chown -R devops:devops /workspace /var/lib/dev-agent/pi
 
-ENV PI_CODING_AGENT_DIR=/home/devops/.pi/agent
-ENV PI_CODING_AGENT_SESSION_DIR=/home/devops/.pi/sessions
+ENV PI_CODING_AGENT_DIR=/var/lib/dev-agent/pi/agent
+ENV PI_CODING_AGENT_SESSION_DIR=/var/lib/dev-agent/pi/sessions
 
 # Derived from package.json; after all layers that should survive Pi upgrades
 ARG PI_VERSION

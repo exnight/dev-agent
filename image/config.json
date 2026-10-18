@@ -1,0 +1,3 @@
+{
+    "baseImage": "dev-agent:node26"
+}
